@@ -1,0 +1,35 @@
+﻿<UserControl
+    x:Class="MotionRobot.Views.UserControls.AxisPointXYZR"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MotionRobot.Views.UserControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="20"
+    d:DesignWidth="400"
+    mc:Ignorable="d">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Style="{StaticResource AxisPointTextBlock}" Text="{Binding PointName}" />
+            <TextBox Style="{StaticResource AxisPointTextBox}" Text="{Binding XPosValue}" />
+            <TextBox Style="{StaticResource AxisPointTextBox}" Text="{Binding YPosValue}" />
+            <TextBox Style="{StaticResource AxisPointTextBox}" Text="{Binding ZPosValue}" />
+            <TextBox Style="{StaticResource AxisPointTextBox}" Text="{Binding RPosValue}" />
+            <Button
+                Command="{Binding GetPositionCommand}"
+                CommandParameter="{Binding GetPositionCommandParameter}"
+                Content="Get"
+                Style="{StaticResource AxisPointButtonBase}" />
+            <Button
+                Command="{Binding JumpPositionCommand}"
+                CommandParameter="{Binding JumpPositionCommandParameter}"
+                Content="Jump"
+                Style="{StaticResource AxisGoButton}" />
+            <Button
+                Command="{Binding GoPositionCommand}"
+                CommandParameter="{Binding GoPositionCommandParameter}"
+                Content="Go"
+                Style="{StaticResource AxisGoButton}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
