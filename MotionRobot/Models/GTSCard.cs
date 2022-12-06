@@ -74,6 +74,7 @@ namespace MotionRobot.Models
             gts.mc.GT_GetEncPos(axisParm.CardNo, axisParm.AxisId, out pValue1, 1, out pClock);
             result.EncPos = pValue1 * axisParm.Equiv;
             return result;
+
         }
         public static bool GetAxisAlarm(AxisParm axisParm)
         {
