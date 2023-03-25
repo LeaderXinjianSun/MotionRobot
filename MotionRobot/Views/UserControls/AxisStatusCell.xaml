@@ -11,6 +11,9 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/MotionRobot;component/Views/Dictionary1.xaml" />
+            </ResourceDictionary.MergedDictionaries>
             <converters:BooleanToColorGrayConverter x:Key="BooleanToColorGrayConverter" />
         </ResourceDictionary>
     </UserControl.Resources>

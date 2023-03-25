@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace MotionRobot.Common.Converters
 {
-    internal class BooleanToColorGrayConverter : IValueConverter
+    public sealed class BooleanToColorGrayConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MotionRobot.Views.UserControls
 {
@@ -45,58 +34,14 @@ namespace MotionRobot.Views.UserControls
         public static readonly DependencyProperty YPosProperty =
             DependencyProperty.Register("YPos", typeof(double), typeof(CurrentPosition));
 
-        public double Z1Pos
+        public double ZPos
         {
-            get { return (double)GetValue(Z1PosProperty); }
-            set { SetValue(Z1PosProperty, value); }
+            get { return (double)GetValue(ZPosProperty); }
+            set { SetValue(ZPosProperty, value); }
         }
 
-        public static readonly DependencyProperty Z1PosProperty =
-            DependencyProperty.Register("Z1Pos", typeof(double), typeof(CurrentPosition));
+        public static readonly DependencyProperty ZPosProperty =
+            DependencyProperty.Register("ZPos", typeof(double), typeof(CurrentPosition));
 
-        public double Z2Pos
-        {
-            get { return (double)GetValue(Z2PosProperty); }
-            set { SetValue(Z2PosProperty, value); }
-        }
-
-        public static readonly DependencyProperty Z2PosProperty =
-            DependencyProperty.Register("Z2Pos", typeof(double), typeof(CurrentPosition));
-
-        public double Z3Pos
-        {
-            get { return (double)GetValue(Z3PosProperty); }
-            set { SetValue(Z3PosProperty, value); }
-        }
-
-        public static readonly DependencyProperty Z3PosProperty =
-            DependencyProperty.Register("Z3Pos", typeof(double), typeof(CurrentPosition));
-
-        public double Z4Pos
-        {
-            get { return (double)GetValue(Z4PosProperty); }
-            set { SetValue(Z4PosProperty, value); }
-        }
-
-        public static readonly DependencyProperty Z4PosProperty =
-            DependencyProperty.Register("Z4Pos", typeof(double), typeof(CurrentPosition));
-
-        public double R1Pos
-        {
-            get { return (double)GetValue(R1PosProperty); }
-            set { SetValue(R1PosProperty, value); }
-        }
-
-        public static readonly DependencyProperty R1PosProperty =
-            DependencyProperty.Register("R1Pos", typeof(double), typeof(CurrentPosition));
-
-        public double R2Pos
-        {
-            get { return (double)GetValue(R2PosProperty); }
-            set { SetValue(R2PosProperty, value); }
-        }
-
-        public static readonly DependencyProperty R2PosProperty =
-            DependencyProperty.Register("R2Pos", typeof(double), typeof(CurrentPosition));
     }
 }

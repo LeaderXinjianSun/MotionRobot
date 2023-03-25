@@ -8,6 +8,9 @@
     d:DesignHeight="20"
     d:DesignWidth="220"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/MotionRobot;component/Views/Dictionary1.xaml" />
+    </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}">
         <StackPanel Orientation="Horizontal">
             <TextBlock Style="{StaticResource AxisPointTextBlock}" Text="{Binding PointName}" />

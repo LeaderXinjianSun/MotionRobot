@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace MotionRobot.Common.Converters
 {
-    internal class BooleanToOrangeConverter : IValueConverter
+    public sealed class BooleanToOrangeConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

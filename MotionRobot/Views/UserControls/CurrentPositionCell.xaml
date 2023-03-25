@@ -15,6 +15,7 @@
                 VerticalAlignment="Center"
                 Content="{Binding AxisName, StringFormat={}{0}:}" />
             <TextBlock
+                Width="56"
                 VerticalAlignment="Center"
                 d:Text="99.999"
                 Text="{Binding PosValue}" />

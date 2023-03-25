@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace MotionRobot.Common.Converters
 {
-    internal class BooleanToOpenCloseConverter : IValueConverter
+    public sealed class BooleanToOpenCloseConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

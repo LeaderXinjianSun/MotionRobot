@@ -6,7 +6,7 @@ using System.Windows.Data;
 
 namespace MotionRobot.Common.Converters
 {
-    internal class BooleanReversalConverter : IValueConverter
+    public sealed class BooleanReversalConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

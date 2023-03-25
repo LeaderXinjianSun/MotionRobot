@@ -5,23 +5,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MotionRobot.Views.UserControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="100"
-    d:DesignWidth="400"
+    d:DesignHeight="80"
+    d:DesignWidth="100"
     mc:Ignorable="d">
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}">
         <StackPanel>
             <local:CurrentPositionCell AxisName="X" PosValue="{Binding XPos}" />
             <local:CurrentPositionCell AxisName="Y" PosValue="{Binding YPos}" />
-            <StackPanel Orientation="Horizontal">
-                <local:CurrentPositionCell AxisName="Z1" PosValue="{Binding Z1Pos}" />
-                <local:CurrentPositionCell AxisName="Z2" PosValue="{Binding Z2Pos}" />
-                <local:CurrentPositionCell AxisName="Z3" PosValue="{Binding Z3Pos}" />
-                <local:CurrentPositionCell AxisName="Z4" PosValue="{Binding Z4Pos}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <local:CurrentPositionCell AxisName="R1" PosValue="{Binding R1Pos}" />
-                <local:CurrentPositionCell AxisName="R2" PosValue="{Binding R2Pos}" />
-            </StackPanel>
+            <local:CurrentPositionCell AxisName="Z" PosValue="{Binding ZPos}" />
         </StackPanel>
     </Grid>
 </UserControl>

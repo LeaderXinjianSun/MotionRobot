@@ -6,7 +6,7 @@ using System.Windows.Media;
 
 namespace MotionRobot.Common.Converters
 {
-    internal class RGBHexToBrushConverter : IValueConverter
+    public sealed class RGBHexToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

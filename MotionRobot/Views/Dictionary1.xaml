@@ -1,0 +1,86 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:MotionRobot.Common.Converters">
+    <converters:BooleanReversalConverter x:Key="BooleanReversalConverter" />
+    <Style x:Key="StateEllipse" TargetType="Ellipse">
+        <Setter Property="Width" Value="10" />
+        <Setter Property="Height" Value="10" />
+    </Style>
+    <Style x:Key="StateRectangle" TargetType="Rectangle">
+        <Setter Property="Width" Value="10" />
+        <Setter Property="Height" Value="10" />
+    </Style>
+    <Style x:Key="AxisPointTextBlock" TargetType="TextBlock">
+        <Setter Property="Width" Value="60" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="AxisPointTextBox" TargetType="TextBox">
+        <Setter Property="Width" Value="60" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="AxisPointButtonBase" TargetType="Button">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Margin" Value="1,0" />
+    </Style>
+    <Style
+        x:Key="AxisGoButton"
+        BasedOn="{StaticResource AxisPointButtonBase}"
+        TargetType="Button" />
+    <Style x:Key="JogButton" TargetType="Button">
+        <Setter Property="Width" Value="50" />
+        <Setter Property="Height" Value="50" />
+        <Setter Property="Margin" Value="1" />
+        <Setter Property="IsEnabled" Value="{Binding IsBusy, Converter={StaticResource BooleanReversalConverter}}" />
+    </Style>
+    <Style x:Key="JogButtonImage" TargetType="Image">
+        <Setter Property="Width" Value="30" />
+    </Style>
+    <Style x:Key="JogButtonText" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="ParamTextBlockBase" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style
+        x:Key="ParamNameTextBlockStyle"
+        BasedOn="{StaticResource ParamTextBlockBase}"
+        TargetType="TextBlock">
+        <Setter Property="Width" Value="50" />
+    </Style>
+    <Style
+        x:Key="ParamUnitTextBlockStyle"
+        BasedOn="{StaticResource ParamTextBlockBase}"
+        TargetType="TextBlock">
+        <Setter Property="Width" Value="30" />
+    </Style>
+    <Style x:Key="ParamTextBoxBase" TargetType="TextBox">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style
+        x:Key="ParamTextBoxStyle"
+        BasedOn="{StaticResource ParamTextBoxBase}"
+        TargetType="TextBox">
+        <Setter Property="Width" Value="60" />
+    </Style>
+    <Style x:Key="DataGridBottomButton" TargetType="Button">
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Width" Value="46" />
+        <Setter Property="Margin" Value="1" />
+    </Style>
+    <Style
+        x:Key="DataGridBottomButtonBusy"
+        BasedOn="{StaticResource DataGridBottomButton}"
+        TargetType="Button">
+        <Setter Property="IsEnabled" Value="{Binding IsBusy, Converter={StaticResource BooleanReversalConverter}}" />
+    </Style>
+    <Style x:Key="HomeOperateButton" TargetType="Button">
+        <Setter Property="Width" Value="60" />
+        <Setter Property="Height" Value="60" />
+        <Setter Property="Margin" Value="1" />
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+</ResourceDictionary>

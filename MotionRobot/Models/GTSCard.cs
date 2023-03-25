@@ -74,7 +74,6 @@ namespace MotionRobot.Models
             gts.mc.GT_GetEncPos(axisParm.CardNo, axisParm.AxisId, out pValue1, 1, out pClock);
             result.EncPos = pValue1 * axisParm.Equiv;
             return result;
-
         }
         public static bool GetAxisAlarm(AxisParm axisParm)
         {
@@ -207,14 +206,22 @@ namespace MotionRobot.Models
             gts.mc.GT_SetEncPos(_axisParam.CardNo, _axisParam.AxisId, (int)Math.Round(value / _axisParam.Equiv, 0));
         }
 
-        public static void AxisPosMove(ref AxisParm _AxisParam, double givePos, double speed = 0)
+        public static void AxisPosMove(ref AxisParm _AxisParam, double givePos, double speed = 0,double acc = 0)
         {
             _AxisParam.Target = givePos / _AxisParam.Equiv;
             gts.mc.TTrapPrm ATrapPrm = new gts.mc.TTrapPrm();
             gts.mc.GT_PrfTrap(_AxisParam.CardNo, _AxisParam.AxisId);
             gts.mc.GT_GetTrapPrm(_AxisParam.CardNo, _AxisParam.AxisId, out ATrapPrm); //读取点位模式运动参数
-            ATrapPrm.acc = _AxisParam.Acc;
-            ATrapPrm.dec = _AxisParam.Acc;
+            if (acc == 0)
+            {
+                ATrapPrm.acc = _AxisParam.Acc;
+                ATrapPrm.dec = _AxisParam.Acc;
+            }
+            else
+            {
+                ATrapPrm.acc = acc;
+                ATrapPrm.dec = acc;
+            }
             ATrapPrm.smoothTime = (short)25;
             gts.mc.GT_SetTrapPrm(_AxisParam.CardNo, _AxisParam.AxisId, ref ATrapPrm); //设置点位模式运动参数
             gts.mc.GT_SetPos(_AxisParam.CardNo, _AxisParam.AxisId, (int)Math.Round(givePos / _AxisParam.Equiv, 0)); //设置目标位置
@@ -376,6 +383,24 @@ namespace MotionRobot.Models
                 0, 
                 Buf1, 
                 (short)Buf1.Length);
+        }
+        public static double GetAdc(short adc)
+        {
+            double pValue; uint pClock;
+            gts.mc.GT_GetAdc(0, adc, out pValue, 1, out pClock);
+            return pValue;
+        }
+
+        public static double GetEnc(short cardNum, short encoder)
+        {
+            double pValue1;
+            uint pClock;
+            gts.mc.GT_GetEncPos(cardNum, encoder, out pValue1, 1, out pClock);
+            return pValue1;
+        }
+        public static void SetEnc(short cardNum, short encoder,int pos)
+        {
+            gts.mc.GT_SetEncPos(cardNum, encoder, pos);
         }
     }
 }

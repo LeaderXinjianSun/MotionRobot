@@ -5,7 +5,7 @@ using System.Windows.Data;
 
 namespace MotionRobot.Common.Converters
 {
-    public class FloatConverter : IValueConverter
+    public sealed class FloatConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
