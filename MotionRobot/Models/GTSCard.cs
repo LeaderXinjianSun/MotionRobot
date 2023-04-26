@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Documents;
 
 namespace MotionRobot.Models
 {
@@ -358,31 +359,70 @@ namespace MotionRobot.Models
 
         public static void AxisCompareUse1(short cardNum, short encoder, int[] Buf1)
         {
-   
-            gts.mc.GT_CompareData(cardNum, 
-                encoder, 
-                1, 
-                0, 
-                0, 
-                100, 
-                Buf1, 
-                (short)Buf1.Length,
-                null, 
-                0);
+            //gts.mc.GT_CompareData(cardNum,
+            //    encoder,
+            //    1,
+            //    0,
+            //    0,
+            //    100,
+            //    Buf1,
+            //    (short)Buf1.Length,
+            //    null,
+            //    0);
+            gts.mc.GT_2DCompareClear(cardNum, 0);
+            gts.mc.GT_2DCompareMode(cardNum, 0, gts.mc.COMPARE2D_MODE_1D);
+            gts.mc.T2DComparePrm Prm;
+            Prm.encx = 1;
+            Prm.ency = encoder;
+            Prm.maxerr = 30;
+            Prm.outputType = 0;
+            Prm.source = 1;
+            Prm.startLevel = 0;
+            Prm.threshold = 0;
+            Prm.time = 100;
+            gts.mc.GT_2DCompareSetPrm(cardNum, 0, ref Prm);
+            gts.mc.T2DCompareData[] pBuf = new gts.mc.T2DCompareData[Buf1.Length];
+            for (int i = 0; i < Buf1.Length; i++)
+            {
+                pBuf[i].py = Buf1[i];
+                pBuf[i].px = 0;
+            }
+            gts.mc.GT_2DCompareData(cardNum, 0, (short)Buf1.Length, ref pBuf[0], 0);
+            gts.mc.GT_2DCompareStart(cardNum, 0);
         }
         public static void AxisCompareUse2(short cardNum, short encoder, int[] Buf1)
         {
-   
-            gts.mc.GT_CompareData(cardNum, 
-                encoder, 
-                1, 
-                0, 
-                0, 
-                100, 
-                null, 
-                0, 
-                Buf1, 
-                (short)Buf1.Length);
+
+            //gts.mc.GT_CompareData(cardNum, 
+            //    encoder, 
+            //    1, 
+            //    0, 
+            //    0, 
+            //    100, 
+            //    null, 
+            //    0, 
+            //    Buf1, 
+            //    (short)Buf1.Length);
+            gts.mc.GT_2DCompareClear(cardNum, 1);
+            gts.mc.GT_2DCompareMode(cardNum, 1, gts.mc.COMPARE2D_MODE_1D);
+            gts.mc.T2DComparePrm Prm;
+            Prm.encx = 1;
+            Prm.ency = encoder;
+            Prm.maxerr = 30;
+            Prm.outputType = 0;
+            Prm.source = 1;
+            Prm.startLevel = 0;
+            Prm.threshold = 0;
+            Prm.time = 100;
+            gts.mc.GT_2DCompareSetPrm(cardNum, 1, ref Prm);
+            gts.mc.T2DCompareData[] pBuf = new gts.mc.T2DCompareData[Buf1.Length];
+            for (int i = 0; i < Buf1.Length; i++)
+            {
+                pBuf[i].py = Buf1[i];
+                pBuf[i].px = 0;
+            }
+            gts.mc.GT_2DCompareData(cardNum, 1, (short)Buf1.Length, ref pBuf[0], 0);
+            gts.mc.GT_2DCompareStart(cardNum, 1);
         }
         public static double GetAdc(short adc)
         {

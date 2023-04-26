@@ -31,7 +31,7 @@
         <Setter Property="Width" Value="50" />
         <Setter Property="Height" Value="50" />
         <Setter Property="Margin" Value="1" />
-        <Setter Property="IsEnabled" Value="{Binding IsBusy, Converter={StaticResource BooleanReversalConverter}}" />
+        <!--<Setter Property="IsEnabled" Value="{Binding IsBusy, Converter={StaticResource BooleanReversalConverter}}" />-->
     </Style>
     <Style x:Key="JogButtonImage" TargetType="Image">
         <Setter Property="Width" Value="30" />
