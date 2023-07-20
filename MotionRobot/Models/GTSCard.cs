@@ -288,20 +288,32 @@ namespace MotionRobot.Models
             gts.mc.GT_Stop(cardNum, 1 << (8 + crdIndex - 1), type << (8 + crdIndex - 1));
         }
 
-        public static bool SetCrd(short cardNum, int ZIndex)
+        public static bool SetCrd(short cardNum, int ZIndex,short crd)
         {
             gts.mc.TCrdPrm crdPrm;
 
             crdPrm.dimension = 3;                        // 建立三维的坐标系
-            crdPrm.synVelMax = 1000;                      // 坐标系的最大合成速度是: 500 pulse/ms
+            crdPrm.synVelMax = 2000;                      // 坐标系的最大合成速度是: 500 pulse/ms
             crdPrm.synAccMax = 20;                        // 坐标系的最大合成加速度是: 2 pulse/ms^2
             crdPrm.evenTime = 0;                         // 坐标系的最小匀速时间为0
-            crdPrm.profile1 = 1;                       // 规划器1对应到X轴                       
-            crdPrm.profile2 = 2;                       // 规划器2对应到Y轴
-            crdPrm.profile3 = (short)(ZIndex == 1 ? 3 : 0);
-            crdPrm.profile4 = (short)(ZIndex == 2 ? 3 : 0);
-            crdPrm.profile5 = (short)(ZIndex == 3 ? 3 : 0);
-            crdPrm.profile6 = (short)(ZIndex == 4 ? 3 : 0);
+            switch (crd)
+            {
+                case 1:
+                    crdPrm.profile1 = 1;                       // 规划器1对应到X轴                       
+                    crdPrm.profile2 = 2;                       // 规划器2对应到Y轴
+                    crdPrm.profile3 = 3;
+                    break;
+                case 2:
+                default:
+                    crdPrm.profile1 = 5;                       // 规划器1对应到X轴                       
+                    crdPrm.profile2 = 6;                       // 规划器2对应到Y轴
+                    crdPrm.profile3 = 7;
+                    break;
+            }
+
+            crdPrm.profile4 = 0;
+            crdPrm.profile5 = 0;
+            crdPrm.profile6 = 0;
             crdPrm.profile7 = 0;
             crdPrm.profile8 = 0;
             crdPrm.setOriginFlag = 0;                    // 需要设置加工坐标系原点位置
@@ -314,7 +326,7 @@ namespace MotionRobot.Models
             crdPrm.originPos7 = 0;
             crdPrm.originPos8 = 0;
 
-            short SRtn = gts.mc.GT_SetCrdPrm(cardNum, 1, ref crdPrm);
+            short SRtn = gts.mc.GT_SetCrdPrm(cardNum, crd, ref crdPrm);
             if (SRtn != 0)
             {
                 return false;
@@ -322,21 +334,21 @@ namespace MotionRobot.Models
             return true;
         }
 
-        public static void AxisLnXYZMove(AxisParm XY, AxisParm Z, List<M1Point> targets)
+        public static void AxisLnXYZMove(AxisParm XY, AxisParm Z, List<M1Point> targets,short crd,double acc)
         {
-            gts.mc.GT_CrdClear(XY.CardNo, 1, 0);
+            gts.mc.GT_CrdClear(XY.CardNo, crd, 0);
             for (int i = 0; i < targets.Count; i++)
             {
                 switch (targets[i].Type)
                 {
                     case 0://普通定位
-                        gts.mc.GT_LnXYZ(XY.CardNo, 1, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, 2, 0, 0);
+                        gts.mc.GT_LnXYZ(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0, 0);
                         break;
                     case 1://精确定位
-                        gts.mc.GT_LnXYZG0(XY.CardNo, 1, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, 2, 0);
+                        gts.mc.GT_LnXYZG0(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0);
                         break;
                     case 2://延时
-                        gts.mc.GT_BufDelay(XY.CardNo, 1, (ushort)targets[i].X, 0);
+                        gts.mc.GT_BufDelay(XY.CardNo, crd, (ushort)targets[i].X, 0);
                         break;
                     default:
                         break;
@@ -344,11 +356,11 @@ namespace MotionRobot.Models
             }
             gts.mc.GT_CrdStart(XY.CardNo, 1, 0);
         }
-        public static bool AxisCheckCrdDone(short cardNum)
+        public static bool AxisCheckCrdDone(short cardNum, short crd)
         {
             short run;
             int seg;
-            gts.mc.GT_CrdStatus(cardNum, 1, out run, out seg, 0);
+            gts.mc.GT_CrdStatus(cardNum, crd, out run, out seg, 0);
             return run != 1;
         }
         public static void ComparePulseTrigger(short cardNum,int hsioIndex)
@@ -379,7 +391,7 @@ namespace MotionRobot.Models
             Prm.source = 1;
             Prm.startLevel = 0;
             Prm.threshold = 0;
-            Prm.time = 100;
+            Prm.time = 500;
             gts.mc.GT_2DCompareSetPrm(cardNum, 0, ref Prm);
             gts.mc.T2DCompareData[] pBuf = new gts.mc.T2DCompareData[Buf1.Length];
             for (int i = 0; i < Buf1.Length; i++)
@@ -413,7 +425,7 @@ namespace MotionRobot.Models
             Prm.source = 1;
             Prm.startLevel = 0;
             Prm.threshold = 0;
-            Prm.time = 100;
+            Prm.time = 500;
             gts.mc.GT_2DCompareSetPrm(cardNum, 1, ref Prm);
             gts.mc.T2DCompareData[] pBuf = new gts.mc.T2DCompareData[Buf1.Length];
             for (int i = 0; i < Buf1.Length; i++)
@@ -441,6 +453,13 @@ namespace MotionRobot.Models
         public static void SetEnc(short cardNum, short encoder,int pos)
         {
             gts.mc.GT_SetEncPos(cardNum, encoder, pos);
+        }
+        public static void SetGear(AxisParm master, AxisParm slave,int masterEven = 1, int slaveEven = 1, int masterSlope = 0)
+        {
+            gts.mc.GT_PrfGear(master.CardNo, slave.AxisId, 0);//设置从轴为gear模式
+            gts.mc.GT_SetGearMaster(master.CardNo, slave.AxisId, master.AxisId, gts.mc.GEAR_MASTER_PROFILE, 0);//设置跟随主轴和模式
+            gts.mc.GT_SetGearRatio(master.CardNo, slave.AxisId, masterEven, slaveEven, masterSlope);//设置齿轮比
+            gts.mc.GT_GearStart(master.CardNo,1 << (slave.AxisId - 1));//启动gear
         }
     }
 }
