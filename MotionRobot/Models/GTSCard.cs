@@ -1,4 +1,5 @@
-﻿using System;
+﻿using gts;
+using System;
 using System.Collections.Generic;
 using System.Windows.Documents;
 
@@ -43,9 +44,14 @@ namespace MotionRobot.Models
     }
     public class M1Point
     {
+        public int IOIndex { get; set; }
+        public bool OnOff { get; set; }
+        public double Delay { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
+        public double Radius { get; set; }
+        public int CircleDir { get; set; }
         public double Speed { get; set; }
         public ushort Type { get; set; }
     }
@@ -283,126 +289,191 @@ namespace MotionRobot.Models
             gts.mc.GT_Stop(_AxisParam.CardNo, 1 << (_AxisParam.AxisId - 1), type << (_AxisParam.AxisId - 1));
         }
 
-        public static bool SetCrd(short cardNum, int ZIndex, short crd)
-        {
-            gts.mc.TCrdPrm crdPrm;
+        //public static bool SetCrd(short cardNum, int ZIndex, short crd)
+        //{
+        //    gts.mc.TCrdPrm crdPrm;
 
-            crdPrm.dimension = 3;                        // 建立三维的坐标系
-            crdPrm.synVelMax = 2000;                      // 坐标系的最大合成速度是: 500 pulse/ms
-            crdPrm.synAccMax = 20;                        // 坐标系的最大合成加速度是: 2 pulse/ms^2
-            crdPrm.evenTime = 0;                         // 坐标系的最小匀速时间为0
-            switch (crd)
-            {
-                case 1:
-                    crdPrm.profile1 = 1;                       // 规划器1对应到X轴                       
-                    crdPrm.profile2 = 2;                       // 规划器2对应到Y轴
-                    crdPrm.profile3 = 3;
-                    break;
-                case 2:
-                default:
-                    crdPrm.profile1 = 5;                       // 规划器1对应到X轴                       
-                    crdPrm.profile2 = 6;                       // 规划器2对应到Y轴
-                    crdPrm.profile3 = 7;
-                    break;
-            }
+        //    crdPrm.dimension = 3;                        // 建立三维的坐标系
+        //    crdPrm.synVelMax = 2000;                      // 坐标系的最大合成速度是: 500 pulse/ms
+        //    crdPrm.synAccMax = 20;                        // 坐标系的最大合成加速度是: 2 pulse/ms^2
+        //    crdPrm.evenTime = 0;                         // 坐标系的最小匀速时间为0
+        //    switch (crd)
+        //    {
+        //        case 1:
+        //            crdPrm.profile1 = 1;                       // 规划器1对应到X轴                       
+        //            crdPrm.profile2 = 2;                       // 规划器2对应到Y轴
+        //            crdPrm.profile3 = 3;
+        //            break;
+        //        case 2:
+        //        default:
+        //            crdPrm.profile1 = 5;                       // 规划器1对应到X轴                       
+        //            crdPrm.profile2 = 6;                       // 规划器2对应到Y轴
+        //            crdPrm.profile3 = 7;
+        //            break;
+        //    }
 
-            crdPrm.profile4 = 0;
-            crdPrm.profile5 = 0;
-            crdPrm.profile6 = 0;
-            crdPrm.profile7 = 0;
-            crdPrm.profile8 = 0;
-            crdPrm.setOriginFlag = 0;                    // 需要设置加工坐标系原点位置
-            crdPrm.originPos1 = 0;                     // 加工坐标系原点位置在(0,0,0)，即与机床坐标系原点重合
-            crdPrm.originPos2 = 0;
-            crdPrm.originPos3 = 0;
-            crdPrm.originPos4 = 0;
-            crdPrm.originPos5 = 0;
-            crdPrm.originPos6 = 0;
-            crdPrm.originPos7 = 0;
-            crdPrm.originPos8 = 0;
+        //    crdPrm.profile4 = 0;
+        //    crdPrm.profile5 = 0;
+        //    crdPrm.profile6 = 0;
+        //    crdPrm.profile7 = 0;
+        //    crdPrm.profile8 = 0;
+        //    crdPrm.setOriginFlag = 0;                    // 需要设置加工坐标系原点位置
+        //    crdPrm.originPos1 = 0;                     // 加工坐标系原点位置在(0,0,0)，即与机床坐标系原点重合
+        //    crdPrm.originPos2 = 0;
+        //    crdPrm.originPos3 = 0;
+        //    crdPrm.originPos4 = 0;
+        //    crdPrm.originPos5 = 0;
+        //    crdPrm.originPos6 = 0;
+        //    crdPrm.originPos7 = 0;
+        //    crdPrm.originPos8 = 0;
 
-            short SRtn = gts.mc.GT_SetCrdPrm(cardNum, crd, ref crdPrm);
-            if (SRtn != 0)
-            {
-                return false;
-            }
-            return true;
-        }
+        //    short SRtn = gts.mc.GT_SetCrdPrm(cardNum, crd, ref crdPrm);
+        //    if (SRtn != 0)
+        //    {
+        //        return false;
+        //    }
+        //    return true;
+        //}
         public static bool SetCrd2D(short cardNum, short x, short y, double maxSpeed, double maxAcc)
         {
-            gts.mc.TCrdPrm crdPrm;
+            try
+            {
+                gts.mc.TCrdPrm crdPrm;
 
-            crdPrm.dimension = 2;                        // 建立二维的坐标系
-            crdPrm.synVelMax = maxSpeed;                      // 坐标系的最大合成速度是: 500 pulse/ms
-            crdPrm.synAccMax = maxAcc;                        // 坐标系的最大合成加速度是: 2 pulse/ms^2
-            crdPrm.evenTime = 0;                         // 坐标系的最小匀速时间为0
-            crdPrm.profile1 = x;                       // 规划器1对应到X轴                       
-            crdPrm.profile2 = y;                       // 规划器2对应到Y轴
-            crdPrm.profile3 = 0;
-            crdPrm.profile4 = 0;
-            crdPrm.profile5 = 0;
-            crdPrm.profile6 = 0;
-            crdPrm.profile7 = 0;
-            crdPrm.profile8 = 0;
-            crdPrm.setOriginFlag = 1;                    // 需要设置加工坐标系原点位置
-            crdPrm.originPos1 = 0;                     // 加工坐标系原点位置在(0,0,0)，即与机床坐标系原点重合
-            crdPrm.originPos2 = 0;
-            crdPrm.originPos3 = 0;
-            crdPrm.originPos4 = 0;
-            crdPrm.originPos5 = 0;
-            crdPrm.originPos6 = 0;
-            crdPrm.originPos7 = 0;
-            crdPrm.originPos8 = 0;
+                crdPrm.dimension = 2;                        // 建立二维的坐标系
+                crdPrm.synVelMax = maxSpeed;                      // 坐标系的最大合成速度是: 500 pulse/ms
+                crdPrm.synAccMax = maxAcc;                        // 坐标系的最大合成加速度是: 2 pulse/ms^2
+                crdPrm.evenTime = 0;                         // 坐标系的最小匀速时间为0
+                short[] axisArr = new short[8];
+                //找X
+                axisArr[x - 1] = 1;
+                //找Y
+                axisArr[y - 1] = 2;
+                crdPrm.profile1 = axisArr[0];                       // 规划器1对应到X轴                       
+                crdPrm.profile2 = axisArr[1];                       // 规划器2对应到Y轴
+                crdPrm.profile3 = axisArr[2];
+                crdPrm.profile4 = axisArr[3];
+                crdPrm.profile5 = axisArr[4];
+                crdPrm.profile6 = axisArr[5];
+                crdPrm.profile7 = axisArr[6];
+                crdPrm.profile8 = axisArr[7];
+                crdPrm.setOriginFlag = 0;                    // 需要设置加工坐标系原点位置
+                crdPrm.originPos1 = 0;                     // 加工坐标系原点位置在(0,0,0)，即与机床坐标系原点重合
+                crdPrm.originPos2 = 0;
+                crdPrm.originPos3 = 0;
+                crdPrm.originPos4 = 0;
+                crdPrm.originPos5 = 0;
+                crdPrm.originPos6 = 0;
+                crdPrm.originPos7 = 0;
+                crdPrm.originPos8 = 0;
 
-            short SRtn = gts.mc.GT_SetCrdPrm(cardNum, 1, ref crdPrm);
-            if (SRtn != 0)
+                short SRtn = gts.mc.GT_SetCrdPrm(cardNum, 1, ref crdPrm);
+                if (SRtn != 0)
+                {
+                    return false;
+                }
+
+                gts.mc.TCrdData[] crdData = new mc.TCrdData[200];
+
+                SRtn = gts.mc.GT_InitLookAhead(cardNum, 1, 0, 5, maxAcc, 200, ref crdData[0]);
+                if (SRtn != 0)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
             {
                 return false;
             }
-            return true;
         }
-        public static void AxisLnXYZMove(AxisParm XY, AxisParm Z, List<M1Point> targets, short crd, double acc)
+        //public static void AxisLnXYZMove(AxisParm XY, AxisParm Z, List<M1Point> targets, short crd, double acc)
+        //{
+        //    gts.mc.GT_CrdClear(XY.CardNo, crd, 0);
+        //    for (int i = 0; i < targets.Count; i++)
+        //    {
+        //        switch (targets[i].Type)
+        //        {
+        //            case 0://普通定位
+        //                gts.mc.GT_LnXYZ(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0, 0);
+        //                break;
+        //            case 1://精确定位
+        //                gts.mc.GT_LnXYZG0(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0);
+        //                break;
+        //            case 2://延时
+        //                gts.mc.GT_BufDelay(XY.CardNo, crd, (ushort)targets[i].X, 0);
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
+        //    gts.mc.GT_CrdStart(XY.CardNo, 1, 0);
+        //}
+        //public static void AxisLnXYMove(AxisParm XY, List<M1Point> targets, short crd, double acc)
+        //{
+        //    gts.mc.GT_CrdClear(XY.CardNo, crd, 0);
+        //    for (int i = 0; i < targets.Count; i++)
+        //    {
+        //        switch (targets[i].Type)
+        //        {
+        //            case 0://普通定位
+        //                gts.mc.GT_LnXY(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0, 0);
+        //                break;
+        //            case 1://精确定位
+        //                gts.mc.GT_LnXYG0(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0);
+        //                break;
+        //            case 2://延时
+        //                gts.mc.GT_BufDelay(XY.CardNo, crd, (ushort)(targets[i].Delay * 1000), 0);
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
+        //}
+        public static void AxisLnXYMove(AxisParm XAxis, AxisParm YAxis, List<M1Point> targets, short crd, double acc)
         {
-            gts.mc.GT_CrdClear(XY.CardNo, crd, 0);
+            // 指令返回值
+            short sRtn;
+            int space;
+            sRtn = gts.mc.GT_CrdClear(XAxis.CardNo, crd, 0);
             for (int i = 0; i < targets.Count; i++)
             {
                 switch (targets[i].Type)
                 {
-                    case 0://普通定位
-                        gts.mc.GT_LnXYZ(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0, 0);
+                    case 0://直线普通定位
+                        sRtn = gts.mc.GT_LnXY(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv), targets[i].Speed / XAxis.Equiv / 1000, acc, 0, 0);
+                        //// 查询返回值是否成功
+                        //if (0 != sRtn)
+                        //{
+                        //    do
+                        //    {
+                        //        // 查询运动缓存区空间，直至空间不为0
+                        //        sRtn = gts.mc.GT_CrdSpace(XY.CardNo, crd, out space, 0);
+                        //    } while (0 == space);
+                        //    // 重新调用上次失败的插补指令
+                        //    sRtn = gts.mc.GT_LnXY(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0, 0);
+                        //}
                         break;
-                    case 1://精确定位
-                        gts.mc.GT_LnXYZG0(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), (int)(targets[i].Z / Z.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0);
+                    case 1://直线精确定位
+                        sRtn = gts.mc.GT_LnXYG0(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv), targets[i].Speed / XAxis.Equiv / 1000, acc, 0);                        
                         break;
-                    case 2://延时
-                        gts.mc.GT_BufDelay(XY.CardNo, crd, (ushort)targets[i].X, 0);
+                    case 2://圆弧定位
+                        sRtn = gts.mc.GT_ArcXYR(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv),
+                            targets[i].Radius / XAxis.Equiv, (short)targets[i].CircleDir, targets[i].Speed / XAxis.Equiv / 1000, acc, 0, 0);
+                        break;
+                    case 3://IO操作
+                        sRtn = gts.mc.GT_BufIO(XAxis.CardNo, crd, (ushort)gts.mc.MC_GPO, (ushort)(1 << targets[i].IOIndex), (ushort)((targets[i].OnOff ? 0 : 1) << targets[i].IOIndex), 0);
+                        break;
+                    case 5://延时
+                        sRtn = gts.mc.GT_BufDelay(XAxis.CardNo, crd, (ushort)(targets[i].Delay * 1000), 0);
                         break;
                     default:
                         break;
                 }
             }
-            gts.mc.GT_CrdStart(XY.CardNo, 1, 0);
-        }
-        public static void AxisLnXYMove(AxisParm XY, List<M1Point> targets, short crd, double acc)
-        {
-            gts.mc.GT_CrdClear(XY.CardNo, crd, 0);
-            for (int i = 0; i < targets.Count; i++)
-            {
-                switch (targets[i].Type)
-                {
-                    case 0://普通定位
-                        gts.mc.GT_LnXY(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0, 0);
-                        break;
-                    case 1://精确定位
-                        gts.mc.GT_LnXYG0(XY.CardNo, crd, (int)(targets[i].X / XY.Equiv), (int)(targets[i].Y / XY.Equiv), targets[i].Speed / XY.Equiv / 1000, acc, 0);
-                        break;
-                    case 2://延时
-                        gts.mc.GT_BufDelay(XY.CardNo, crd, (ushort)targets[i].X, 0);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            // 将前瞻缓存区中的数据压入控制器
+            sRtn = gts.mc.GT_CrdData(XAxis.CardNo, crd, System.IntPtr.Zero, 0);
         }
         public static void AxisStartCrd(short cardNum)
         {
