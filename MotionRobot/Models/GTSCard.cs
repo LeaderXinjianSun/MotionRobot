@@ -334,7 +334,7 @@ namespace MotionRobot.Models
         //    }
         //    return true;
         //}
-        public static bool SetCrd2D(short cardNum, short x, short y, double maxSpeed, double maxAcc)
+        public static bool SetCrd2D(short cardNum, short crd, short x, short y, double maxSpeed, double maxAcc)
         {
             try
             {
@@ -367,7 +367,7 @@ namespace MotionRobot.Models
                 crdPrm.originPos7 = 0;
                 crdPrm.originPos8 = 0;
 
-                short SRtn = gts.mc.GT_SetCrdPrm(cardNum, 1, ref crdPrm);
+                short SRtn = gts.mc.GT_SetCrdPrm(cardNum, crd, ref crdPrm);
                 if (SRtn != 0)
                 {
                     return false;
@@ -375,7 +375,7 @@ namespace MotionRobot.Models
 
                 gts.mc.TCrdData[] crdData = new mc.TCrdData[200];
 
-                SRtn = gts.mc.GT_InitLookAhead(cardNum, 1, 0, 5, maxAcc, 200, ref crdData[0]);
+                SRtn = gts.mc.GT_InitLookAhead(cardNum, crd, 0, 5, maxAcc, 200, ref crdData[0]);
                 if (SRtn != 0)
                 {
                     return false;
@@ -475,9 +475,9 @@ namespace MotionRobot.Models
             // 将前瞻缓存区中的数据压入控制器
             sRtn = gts.mc.GT_CrdData(XAxis.CardNo, crd, System.IntPtr.Zero, 0);
         }
-        public static void AxisStartCrd(short cardNum)
+        public static void AxisStartCrd(short cardNum, short crd)
         {
-            gts.mc.GT_CrdStart(cardNum, 1, 0);
+            gts.mc.GT_CrdStart(cardNum, (short)(1 << (crd - 1)), 0);
         }
         public static void AxisStop(short cardNum, int crdIndex, int type)
         {
