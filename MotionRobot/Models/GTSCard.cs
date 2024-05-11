@@ -56,6 +56,7 @@ namespace MotionRobot.Models
         public double Radius { get; set; }
         public int CircleDir { get; set; }
         public double Speed { get; set; }
+        public double Acc { get; set; }
         public ushort Type { get; set; }
     }
     public static class GTSCard
@@ -337,7 +338,7 @@ namespace MotionRobot.Models
         //    }
         //    return true;
         //}
-        public static bool SetCrd3D(short cardNum, short crd, short x, short y, short z, double maxSpeed, double maxAcc)
+        public static bool SetCrd3D(short cardNum, short crd,bool isAbs, short x, short y, short z, double maxSpeed, double maxAcc)
         {
             try
             {
@@ -362,7 +363,7 @@ namespace MotionRobot.Models
                 crdPrm.profile6 = axisArr[5];
                 crdPrm.profile7 = axisArr[6];
                 crdPrm.profile8 = axisArr[7];
-                crdPrm.setOriginFlag = 0;                    // 需要设置加工坐标系原点位置
+                crdPrm.setOriginFlag = (short)(isAbs ? 1 : 0);                    // 需要设置加工坐标系原点位置
                 crdPrm.originPos1 = 0;                     // 加工坐标系原点位置在(0,0,0)，即与机床坐标系原点重合
                 crdPrm.originPos2 = 0;
                 crdPrm.originPos3 = 0;
@@ -498,10 +499,11 @@ namespace MotionRobot.Models
             sRtn = gts.mc.GT_CrdClear(XAxis.CardNo, crd, 0);
             for (int i = 0; i < targets.Count; i++)
             {
+                double _acc = acc <= 0 ? targets[i].Acc : acc;
                 switch (targets[i].Type)
                 {
                     case 0://直线普通定位
-                        sRtn = gts.mc.GT_LnXYZ(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv), (int)(targets[i].Z / ZAxis.Equiv), targets[i].Speed / XAxis.Equiv / 1000, acc, 0, 0);
+                        sRtn = gts.mc.GT_LnXYZ(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv), (int)(targets[i].Z / ZAxis.Equiv), targets[i].Speed / XAxis.Equiv / 1000, _acc, 0, 0);
                         //// 查询返回值是否成功
                         //if (0 != sRtn)
                         //{
@@ -515,12 +517,12 @@ namespace MotionRobot.Models
                         //}
                         break;
                     case 1://直线精确定位
-                        sRtn = gts.mc.GT_LnXYZG0(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv), (int)(targets[i].Z / ZAxis.Equiv), targets[i].Speed / XAxis.Equiv / 1000, acc, 0);
+                        sRtn = gts.mc.GT_LnXYZG0(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv), (int)(targets[i].Z / ZAxis.Equiv), targets[i].Speed / XAxis.Equiv / 1000, _acc, 0);
                         break;
                     case 2://圆弧定位
                         sRtn = gts.mc.GT_ArcXYZ(XAxis.CardNo, crd, (int)(targets[i].X / XAxis.Equiv), (int)(targets[i].Y / YAxis.Equiv), (int)(targets[i].Z / ZAxis.Equiv),
                             (int)(targets[i].MidX / XAxis.Equiv), (int)(targets[i].MidY / YAxis.Equiv), (int)(targets[i].MidZ / ZAxis.Equiv),
-                            targets[i].Speed / XAxis.Equiv / 1000, acc, 0, 0);
+                            targets[i].Speed / XAxis.Equiv / 1000, _acc, 0, 0);
                         break;
                     case 3://IO操作
                         sRtn = gts.mc.GT_BufIO(XAxis.CardNo, crd, (ushort)gts.mc.MC_GPO, (ushort)(1 << targets[i].IOIndex), (ushort)((targets[i].OnOff ? 0 : 1) << targets[i].IOIndex), 0);
