@@ -381,7 +381,7 @@ namespace MotionRobot.Models
 
                 gts.mc.TCrdData[] crdData = new mc.TCrdData[200];
 
-                SRtn = gts.mc.GT_InitLookAhead(cardNum, crd, 0, 5, maxAcc, 200, ref crdData[0]);
+                SRtn = gts.mc.GT_InitLookAhead(cardNum, crd, 0, 10, maxAcc, 200, ref crdData[0]);
                 if (SRtn != 0)
                 {
                     return false;
