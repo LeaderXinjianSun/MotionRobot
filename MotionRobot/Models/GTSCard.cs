@@ -42,6 +42,11 @@ namespace MotionRobot.Models
         public double SafePos;
         public double Target;
     }
+    public struct PTData
+    {
+        public double pos;
+        public int time;
+    }
     public class M1Point
     {
         public int IOIndex { get; set; }
@@ -749,6 +754,35 @@ namespace MotionRobot.Models
             gts.mc.GT_SetGearMaster(master.CardNo, slave.AxisId, master.AxisId, gts.mc.GEAR_MASTER_PROFILE, 0);//设置跟随主轴和模式
             gts.mc.GT_SetGearRatio(master.CardNo, slave.AxisId, masterEven, slaveEven, masterSlope);//设置齿轮比
             gts.mc.GT_GearStart(master.CardNo, 1 << (slave.AxisId - 1));//启动gear
+        }
+        public static void AxisPTMove(ref AxisParm _AxisParam, PTData[] data, short fifo)
+        {
+            double pos = 0;
+            int time = 0;
+            var r1 = gts.mc.GT_PrfPt(_AxisParam.CardNo, _AxisParam.AxisId, gts.mc.PT_MODE_STATIC);//设置静态PT运动模式
+            r1 = gts.mc.GT_PtClear(_AxisParam.CardNo, _AxisParam.AxisId, fifo);//清空FIFO0
+            for (int i = 0; i < data.Length; i++)
+            {
+                pos += (int)Math.Round(data[i].pos / _AxisParam.Equiv, 0);
+                time += data[i].time;
+                short type1 = gts.mc.PT_SEGMENT_NORMAL;
+                if (i == data.Length - 1)
+                {
+                    type1 = gts.mc.PT_SEGMENT_STOP;
+                }
+                r1 = gts.mc.GT_PtData(_AxisParam.CardNo, _AxisParam.AxisId, pos, time, type1, fifo);
+            }
+            double pValue1;
+            uint pClock;
+            gts.mc.GT_GetEncPos(_AxisParam.CardNo, _AxisParam.AxisId, out pValue1, 1, out pClock);
+            _AxisParam.Target = pValue1 + pos;
+            int option = fifo;
+            r1 = gts.mc.GT_PtStart(_AxisParam.CardNo, 1 << (_AxisParam.AxisId - 1), option << (_AxisParam.AxisId - 1));//启动FIFO的PT运动
+        }
+        public static short AxisPtSpace(AxisParm _AxisParam, short fifo)
+        {
+            gts.mc.GT_PtSpace(_AxisParam.CardNo, _AxisParam.AxisId, out var pSpace, fifo);
+            return pSpace;
         }
     }
 }
