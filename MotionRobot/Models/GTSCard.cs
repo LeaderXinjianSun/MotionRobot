@@ -784,5 +784,105 @@ namespace MotionRobot.Models
             gts.mc.GT_PtSpace(_AxisParam.CardNo, _AxisParam.AxisId, out var pSpace, fifo);
             return pSpace;
         }
+        /// <summary>
+        /// 获取PVT运动的数据，PT运动也能用。PVT采用percent描述方式，只是比PT运动多了指定加速度曲线的百分比。
+        /// </summary>
+        /// <param name="mdata">输入数据信息</param>
+        /// <param name="acc">加速度</param>
+        /// <param name="percent">加速度曲线百分比</param>
+        /// <returns></returns>
+        public static List<Tuple<double, double, double>> GetPVTData(double[,] mdata, double acc = 5000, double percent = 60)
+        {
+            /*
+             * double[,] mdata = new double[,]
+               {
+                    { 0,300},//位移,最终速度(可能距离太短达不到)
+                    { 59.106,10},
+                    { 79.106,300},
+                    { 138.211,10},
+                    { 158.211,300},
+                    { 217.3165,10},
+                    { 237.3165,0},
+               };
+             */
+            double percent1 = percent > 100 ? 100 : percent;
+            percent1 = percent < 0 ? 0 : percent;
+            List<Tuple<double, double, double>> outDataList = new List<Tuple<double, double, double>>();//Tuple:距离,时间,加速度百分比
+            double preSpeed = 0;//上个节点的速度
+            int arrCount = mdata.GetLength(0);
+            for (int i = 0; i < arrCount; i++)
+            {
+                if (i < arrCount - 1)
+                {
+                    double accTime = Math.Abs(mdata[i, 1] - preSpeed) / acc;//加速时间
+                    double accDist = (mdata[i, 1] + preSpeed) * accTime / 2;//加速距离。用梯形公式算面积
+
+                    if (mdata[i + 1, 0] - mdata[i, 0] > accDist)
+                    {
+                        //有加速和匀速阶段
+                        outDataList.Add(new Tuple<double, double, double>(accDist, accTime, percent1));
+                        //Console.WriteLine("accDist:{0:F3},accTime:{1:F3}:speed:{2:F3}", accDist, accTime, mdata[i, 1]);
+
+                        double avgDist = mdata[i + 1, 0] - mdata[i, 0] - accDist;//匀速距离
+                        double avgTime = avgDist / mdata[i, 1];//匀速时间
+                        outDataList.Add(new Tuple<double, double, double>(avgDist, avgTime, 0));
+                        preSpeed = mdata[i, 1];
+                        //Console.WriteLine("avgDist:{0:F3},avgTime:{1:F3}:speed:{2:F3}", avgDist, avgTime, mdata[i, 1]);
+                    }
+                    else
+                    {
+                        //没有匀速阶段
+                        double accDist1 = mdata[i + 1, 0] - mdata[i, 0];
+                        double speed1 = Math.Sqrt(accDist1 * 2 * acc * (mdata[i, 1] < preSpeed ? -1 : 1) + Math.Pow(preSpeed, 2)); //用梯形面积算速度
+                        double accTime1 = Math.Abs(preSpeed - speed1) / acc;//加速时间
+                        outDataList.Add(new Tuple<double, double, double>(accDist1, accTime1, percent));
+                        preSpeed = speed1;
+                        //Console.WriteLine("accDist:{0:F3},accTime:{1:F3}:speed:{2:F3}", accDist1, accTime1, speed1);
+                    }
+                }
+                else
+                {
+                    //最后一段为减速停止段，会比目标位置多一段减速距离
+                    double accTime = Math.Abs(0 - preSpeed) / acc;//加速时间
+                    double accDist = Math.Abs(0 - preSpeed) * accTime / 2;//加速距离
+                    outDataList.Add(new Tuple<double, double, double>(accDist, accTime, percent1));
+                }
+            }
+            return outDataList;
+        }
+        /// <summary>
+        /// PVT运动。位移包含加速和匀速段
+        /// </summary>
+        /// <param name="_AxisParam"></param>
+        /// <param name="outDataList">1:位置(增量) 2:时间(增量) 3:百分比</param>
+        /// <param name="tableId"></param>
+        public static void AxisPVTMove(ref AxisParm _AxisParam, List<Tuple<double, double, double>> outDataList, short tableId = 1)
+        {
+            short sRtn;
+            var arr = outDataList.ToArray();
+            double[] time_y = new double[arr.Length + 1];
+            double[] pos_y = new double[arr.Length + 1];
+            double[] percent_y = new double[arr.Length + 1];
+            sRtn = mc.GT_PrfPvt(_AxisParam.CardNo, _AxisParam.AxisId);
+            double time = 0, pos = 0;
+            for (int i = 0; i < arr.Length; i++)
+            {
+                pos_y[i] = pos / _AxisParam.Equiv;
+                time_y[i] = time * 1000;
+                percent_y[i] = arr[i].Item3;
+                pos += arr[i].Item1;
+                time += arr[i].Item2;
+            }
+            pos_y[arr.Length] = pos / _AxisParam.Equiv;
+            time_y[arr.Length] = time * 1000;
+            percent_y[arr.Length] = 0;
+            sRtn = mc.GT_PvtTablePercent(_AxisParam.CardNo, tableId, time_y.Length, ref time_y[0], ref pos_y[0], ref percent_y[0], 0);
+            sRtn = mc.GT_PvtTableSelect(_AxisParam.CardNo, _AxisParam.AxisId, tableId);
+            sRtn = mc.GT_PvtStart(_AxisParam.CardNo, 1 << (_AxisParam.AxisId - 1));
+            double pValue1;
+            uint pClock;
+            mc.GT_GetEncPos(_AxisParam.CardNo, _AxisParam.AxisId, out pValue1, 1, out pClock);
+            _AxisParam.Target = pValue1 + pos / _AxisParam.Equiv;
+        }
     }
 }
