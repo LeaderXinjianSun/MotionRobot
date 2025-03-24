@@ -1,7 +1,6 @@
 ﻿using gts;
 using System;
 using System.Collections.Generic;
-using System.Windows.Documents;
 
 namespace MotionRobot.Models
 {
@@ -754,6 +753,13 @@ namespace MotionRobot.Models
             gts.mc.GT_SetGearMaster(master.CardNo, slave.AxisId, master.AxisId, gts.mc.GEAR_MASTER_PROFILE, 0);//设置跟随主轴和模式
             gts.mc.GT_SetGearRatio(master.CardNo, slave.AxisId, masterEven, slaveEven, masterSlope);//设置齿轮比
             gts.mc.GT_GearStart(master.CardNo, 1 << (slave.AxisId - 1));//启动gear
+        }
+        public static void SetGearHand(AxisParm slave, int masterEven = 1, int slaveEven = 1, int masterSlope = 0)
+        {
+            gts.mc.GT_PrfGear(slave.CardNo, slave.AxisId, 0);//设置从轴为gear模式
+            gts.mc.GT_SetGearMaster(slave.CardNo, slave.AxisId, 11, gts.mc.GEAR_MASTER_ENCODER, 1);//设置跟随主轴和模式
+            gts.mc.GT_SetGearRatio(slave.CardNo, slave.AxisId, masterEven, slaveEven, masterSlope);//设置齿轮比
+            gts.mc.GT_GearStart(slave.CardNo, 1 << (slave.AxisId - 1));//启动gear
         }
         public static void AxisPTMove(ref AxisParm _AxisParam, PTData[] data, short fifo)
         {
