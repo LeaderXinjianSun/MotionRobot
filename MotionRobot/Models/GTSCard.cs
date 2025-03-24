@@ -159,6 +159,12 @@ namespace MotionRobot.Models
             gts.mc.GT_GetDo(cardNum, gts.mc.MC_GPO, out pValue);
             return pValue;
         }
+        public static int GetDiPortHand(short cardNum)
+        {
+            int pValue;
+            gts.mc.GT_GetDi(cardNum, gts.mc.MC_MPG, out pValue);
+            return pValue;
+        }
         public static void SetDoPort1(short cardNum, int value)
         {
             gts.mc.GT_SetDo(cardNum, gts.mc.MC_GPO, value);
