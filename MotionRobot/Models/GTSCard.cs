@@ -192,6 +192,31 @@ namespace MotionRobot.Models
             gts.mc.GT_GoHome(_axisParam.CardNo, _axisParam.AxisId, ref tHomePrm);//启动 Smart Home 回原点
         }
 
+        /// <summary>
+        /// 回原点监控
+        /// </summary>
+        /// <param name="_axisParam"></param>
+        /// <returns>成功失败;状态;错误码</returns>
+        public static (bool, short, short) AxisHomeCheckDoneWithStateCode(AxisParm _axisParam)
+        {
+            gts.mc.THomeStatus tHomeSts;
+            gts.mc.GT_GetHomeStatus(_axisParam.CardNo, _axisParam.AxisId, out tHomeSts);
+            if (tHomeSts.run == 0)
+            {
+                if (tHomeSts.stage == gts.mc.HOME_STAGE_END)
+                {
+                    return (true, tHomeSts.stage, tHomeSts.error);
+                }
+                else
+                {
+                    return (false, tHomeSts.stage, tHomeSts.error);
+                }
+            }
+            else
+            {
+                return (false, -1, 0);
+            }
+        }
         public static bool AxisHomeCheckDone(AxisParm _axisParam)
         {
             gts.mc.THomeStatus tHomeSts;
