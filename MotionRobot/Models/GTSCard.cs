@@ -405,7 +405,7 @@ namespace MotionRobot.Models
                 //找Z
                 axisArr[z - 1] = 3;
                 //找R
-                axisArr[z - 1] = 4;
+                axisArr[a - 1] = 4;
                 crdPrm.profile1 = axisArr[0];                       // 规划器1对应到X轴                       
                 crdPrm.profile2 = axisArr[1];                       // 规划器2对应到Y轴
                 crdPrm.profile3 = axisArr[2];
